@@ -25,18 +25,17 @@ jobs:
           python -c "
           from ultralytics import YOLO
           import os, shutil
-          for name in ['yolo26n', 'yolo26x']:
-              print(f'导出 {name}...')
-              model = YOLO(f'{name}.pt')
-              out = model.export(format='tflite', imgsz=640)
-              if os.path.isdir(out):
-                  for f in os.listdir(out):
-                      if f.endswith('.tflite'):
-                          out = os.path.join(out, f)
-                          break
-              dst = f'app/src/main/assets/{name}.tflite'
-              shutil.copy(out, dst)
-              print(f'{name} 完成, 大小: {os.path.getsize(dst)/1024/1024:.1f} MB')
+          print('导出 yolo26n...')
+          model = YOLO('yolo26n.pt')
+          out = model.export(format='tflite', imgsz=640)
+          if os.path.isdir(out):
+              for f in os.listdir(out):
+                  if f.endswith('.tflite'):
+                      out = os.path.join(out, f)
+                      break
+          dst = 'app/src/main/assets/yolo26n.tflite'
+          shutil.copy(out, dst)
+          print(f'yolo26n 完成, 大小: {os.path.getsize(dst)/1024/1024:.1f} MB')
           "
 
       - name: 设置 JDK 17
