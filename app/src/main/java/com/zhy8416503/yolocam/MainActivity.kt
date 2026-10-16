@@ -90,13 +90,13 @@ class MainActivity : AppCompatActivity() {
         cameraProviderFuture.addListener({
             val provider = cameraProviderFuture.get()
 
-            // 预览: 4K (一加 Ace 6T IMX906 支持)
+            // 预览: 1080p 60fps (拍照视角, 一加 Ace 6T 支持)
             val preview = Preview.Builder()
-                .setTargetResolution(Size(3840, 2160))
+                .setTargetResolution(Size(1920, 1080))
                 .build()
                 .also { it.setSurfaceProvider(previewView.surfaceProvider) }
 
-            // 分析: 720p, 60fps 目标
+            // 分析: 720p, 60fps 目标 (YOLO 输入)
             val analysis = ImageAnalysis.Builder()
                 .setTargetResolution(Size(1280, 720))
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
