@@ -19,8 +19,7 @@ data class Detection(
 )
 
 enum class ModelVariant(val assetName: String, val displayName: String) {
-    N("yolo26n.tflite", "常规精度"),
-    X("yolo26x.tflite", "超高精度")
+    N("yolo26n.tflite", "常规精度")
 }
 
 class Detector(context: Context, variant: ModelVariant) {

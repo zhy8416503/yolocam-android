@@ -27,11 +27,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var overlay: OverlayView
     private lateinit var fpsText: TextView
     private lateinit var countText: TextView
-    private lateinit var btnNormal: Button
-    private lateinit var btnUltra: Button
 
     private var detector: Detector? = null
-    private var currentVariant = ModelVariant.N
+    private var currentVariant = ModelVariant.N  // 单模型, 固定 N
     private lateinit var cameraExecutor: ExecutorService
 
     // 推理节流: N 目标 60fps, X 目标 10fps (X 太慢)
@@ -50,12 +48,10 @@ class MainActivity : AppCompatActivity() {
         overlay = findViewById(R.id.overlayView)
         fpsText = findViewById(R.id.fpsText)
         countText = findViewById(R.id.countText)
-        btnNormal = findViewById(R.id.btnNormal)
-        btnUltra = findViewById(R.id.btnUltra)
-
-        btnNormal.setOnClickListener { switchModel(ModelVariant.N) }
-        btnUltra.setOnClickListener { switchModel(ModelVariant.X) }
-        updateButtons()
+        // 单模型: 顶部只显示标签, 无切换按钮
+        val modelLabel = findViewById<android.widget.TextView>(R.id.btnNormal)
+        modelLabel.text = "YOLO26-N · 常规精度"
+        modelLabel.isEnabled = false
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
@@ -68,28 +64,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateButtons() {
-        btnNormal.isEnabled = currentVariant != ModelVariant.N
-        btnUltra.isEnabled = currentVariant != ModelVariant.X
-        btnNormal.alpha = if (currentVariant == ModelVariant.N) 1.0f else 0.5f
-        btnUltra.alpha = if (currentVariant == ModelVariant.X) 1.0f else 0.5f
-    }
-
-    private fun switchModel(variant: ModelVariant) {
-        if (variant == currentVariant) return
-        currentVariant = variant
-        updateButtons()
-        // 在后台线程重建 Detector
-        cameraExecutor.execute {
-            try {
-                detector?.close()
-                detector = Detector(this, variant)
-                runOnUiThread { fpsText.text = "已切换: ${variant.displayName}" }
-            } catch (e: Exception) {
-                runOnUiThread { fpsText.text = "模型加载失败" }
-            }
-        }
-    }
+    // 单模型, 无需切换
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
@@ -140,8 +115,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun analyze(image: ImageProxy) {
-        // 节流: N=60fps (16.6ms), X=10fps (100ms)
-        val interval = if (currentVariant == ModelVariant.N) 16_666_666L else 100_000_000L
+        // 节流: 目标 60fps (16.6ms), 跑不完就丢帧
+        val interval = 16_666_666L
         val now = System.nanoTime()
         if (detecting || now - lastInferenceTime < interval) {
             image.close()
