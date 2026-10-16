@@ -17,7 +17,7 @@ jobs:
 
       - name: 转换模型 (YOLO26n/x -> TFLite)
         run: |
-          pip install "torch==2.13.0" "torchvision==0.18.0" --index-url https://download.pytorch.org/whl/cpu
+          pip install "torch==2.13.0" "torchvision==0.28.0" --index-url https://download.pytorch.org/whl/cpu
           pip install ultralytics
           python -c "
           from ultralytics import YOLO
